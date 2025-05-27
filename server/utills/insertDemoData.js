@@ -1,240 +1,283 @@
+// Load environment variables from .env file
+require('dotenv').config({ path: __dirname + '/../.env' });
+
 const { PrismaClient } = require("@prisma/client");
+const { faker } = require('@faker-js/faker');
+const bcrypt = require('bcrypt');
 
 const prisma = new PrismaClient();
 
-const demoProducts = [
-  {
-    id: "1",
-    title: "Smart phone",
-    price: 22,
-    rating: 5,
-    description: "This is smart phone description",
-    mainImage: "product1.webp",
-    slug: "smart-phone-demo",
-    manufacturer: "Samsung",
-    categoryId: "3117a1b0-6369-491e-8b8b-9fdd5ad9912e",
-    inStock: 0,
-  },
-  {
-    id: "2",
-    title: "SLR camera",
-    price: 24,
-    rating: 0,
-    description: "This is slr description",
-    mainImage: "product2.webp",
-    slug: "slr-camera-demo",
-    manufacturer: "Canon",
-    categoryId: "659a91b9-3ff6-47d5-9830-5e7ac905b961",
-    inStock: 0,
-  },
-  {
-    id: "3",
-    title: "Mixer grinder",
-    price: 25,
-    rating: 4,
-    description: "This is mixed grinder description",
-    mainImage: "product3.webp",
-    slug: "mixed-grinder-demo",
-    manufacturer: "ZunVolt",
-    categoryId: "6c3b8591-b01e-4842-bce1-2f5585bf3a28",
-    inStock: 1,
-  },
-  {
-    id: "4",
-    title: "Phone gimbal",
-    price: 21,
-    rating: 5,
-    description: "This is phone gimbal description",
-    mainImage: "product4.webp",
-    slug: "phone-gimbal-demo",
-    manufacturer: "Samsung",
-    categoryId: "d30b85e2-e544-4f48-8434-33fe0b591579",
-    inStock: 1,
-  },
-  {
-    id: "5",
-    title: "Tablet keyboard",
-    price: 52,
-    rating: 4,
-    description: "This is tablet keyboard description",
-    mainImage: "product5.webp",
-    slug: "tablet-keyboard-demo",
-    manufacturer: "Samsung",
-    categoryId: "ada699e5-e764-4da0-8d3e-18a8c8c5ed24",
-    inStock: 1,
-  },
-  {
-    id: "6",
-    title: "Wireless earbuds",
-    price: 74,
-    rating: 3,
-    description: "This is earbuds description",
-    mainImage: "product6.webp",
-    slug: "wireless-earbuds-demo",
-    manufacturer: "Samsung",
-    categoryId: "1cb9439a-ea47-4a33-913b-e9bf935bcc0b",
-    inStock: 1,
-  },
-  {
-    id: "7",
-    title: "Party speakers",
-    price: 35,
-    rating: 5,
-    description: "This is party speakers description",
-    mainImage: "product7.webp",
-    slug: "party-speakers-demo",
-    manufacturer: "SOWO",
-    categoryId: "7a241318-624f-48f7-9921-1818f6c20d85",
-    inStock: 1,
-  },
-  {
-    id: "8",
-    title: "Slow juicer",
-    price: 69,
-    rating: 5,
-    description: "Slow juicer desc",
-    mainImage: "product8.webp",
-    slug: "slow-juicer-demo",
-    manufacturer: "Bosch",
-    categoryId: "8d2a091c-4b90-4d60-b191-114b895f3e54",
-    inStock: 1,
-  },
-  {
-    id: "9",
-    title: "Wireless headphones",
-    price: 89,
-    rating: 3,
-    description: "This is wireless headphones description",
-    mainImage: "product9.webp",
-    slug: "wireless-headphones-demo",
-    manufacturer: "Sony",
-    categoryId: "4c2cc9ec-7504-4b7c-8ecd-2379a854a423",
-    inStock: 1,
-  },
-  {
-    id: "10",
-    title: "Smart watch",
-    price: 64,
-    rating: 3,
-    description: "This is smart watch description",
-    mainImage: "product10.webp",
-    slug: "smart-watch-demo",
-    manufacturer: "Samsung",
-    categoryId: "a6896b67-197c-4b2a-b5e2-93954474d8b4",
-    inStock: 1,
-  },
-  {
-    id: "11",
-    title: "Notebook horizon",
-    price: 52,
-    rating: 5,
-    description: "This is notebook description",
-    mainImage: "product11.webp",
-    slug: "notebook-horizon-demo",
-    manufacturer: "HP",
-    categoryId: "782e7829-806b-489f-8c3a-2689548d7153",
-    inStock: 1,
-  },
-  {
-    id: "12",
-    title: "Mens trimmer",
-    price: 54,
-    rating: 5,
-    description: "This is trimmer description",
-    mainImage: "product12.webp",
-    slug: "mens-trimmer-demo",
-    manufacturer: "Gillete",
-    categoryId: "313eee86-bc11-4dc1-8cb0-6b2c2a2a1ccb",
-    inStock: 0,
-  }
-];
+// Number of records to create
+const NUM_USERS = 10;
+const NUM_PRODUCTS = 50;
+const NUM_ORDERS = 20;
+const NUM_WISHLISTS = 15;
 
-
+// Original demo data - keep for reference
 const demoCategories = [
-  {
-    id: "7a241318-624f-48f7-9921-1818f6c20d85",
-    name: "speakers",
-  },
-  {
-    id: "313eee86-bc11-4dc1-8cb0-6b2c2a2a1ccb",
-    name: "trimmers",
-  },
-  {
-    id: "782e7829-806b-489f-8c3a-2689548d7153",
-    name: "laptops",
-  },
-  {
-    id: "a6896b67-197c-4b2a-b5e2-93954474d8b4",
-    name: "watches",
-  },
-  {
-    id: "4c2cc9ec-7504-4b7c-8ecd-2379a854a423",
-    name: "headphones",
-  },
-  {
-    id: "8d2a091c-4b90-4d60-b191-114b895f3e54",
-    name: "juicers",
-  },
-  {
-    id: "1cb9439a-ea47-4a33-913b-e9bf935bcc0b",
-    name: "earbuds",
-  },
-  {
-    id: "ada699e5-e764-4da0-8d3e-18a8c8c5ed24",
-    name: "tablets",
-  },
-  {
-    id: "d30b85e2-e544-4f48-8434-33fe0b591579",
-    name: "phone-gimbals",
-  },
-  {
-    id: "6c3b8591-b01e-4842-bce1-2f5585bf3a28",
-    name: "mixer-grinders",
-  },
-  {
-    id: "659a91b9-3ff6-47d5-9830-5e7ac905b961",
-    name: "cameras",
-  },
-  {
-    id: "3117a1b0-6369-491e-8b8b-9fdd5ad9912e",
-    name: "smart-phones",
-  },
-  {
-    id: "da6413b4-22fd-4fbb-9741-d77580dfdcd5",
-    name: "mouses"
-  },
-  {
-    id: "ss6412b4-22fd-4fbb-9741-d77580dfdcd2",
-    name: "computers"
-  },
-  {
-    id: "fs6412b4-22fd-4fbb-9741-d77512dfdfa3",
-    name: "printers"
-  }
+  "speakers", "trimmers", "laptops", "watches", "headphones",
+  "juicers", "earbuds", "tablet-keyboards", "phone-gimbals", 
+  "mixer-grinders", "cameras", "smart-phones", "gaming", "televisions", "home-appliances"
 ];
 
-async function insertDemoData() {
+const manufacturers = [
+  "Samsung", "Apple", "Sony", "LG", "Bosch", "Canon", "Nikon",
+  "HP", "Dell", "Lenovo", "Asus", "Acer", "Microsoft", "Philips",
+  "Panasonic", "ZunVolt", "SOWO", "Gillete"
+];
+
+/**
+ * Delete all existing data from the database
+ */
+async function deleteAllExistingData() {
+  console.log("🗑️ Starting database cleanup...");
   
-  for (const category of demoCategories) {
-    await prisma.category.create({
-      data: category,
-    });
+  try {
+    // Delete data in the correct order to respect foreign key constraints
+    console.log("Deleting wishlist records...");
+    const deletedWishlists = await prisma.wishlist.deleteMany({});
+    console.log(`Successfully deleted ${deletedWishlists.count} wishlist records`);
+    
+    console.log("Deleting customer order product records...");
+    const deletedOrderProducts = await prisma.customer_order_product.deleteMany({});
+    console.log(`Successfully deleted ${deletedOrderProducts.count} order product records`);
+    
+    console.log("Deleting customer order records...");
+    const deletedOrders = await prisma.customer_order.deleteMany({});
+    console.log(`Successfully deleted ${deletedOrders.count} customer order records`);
+    
+    console.log("Deleting product image records...");
+    const deletedImages = await prisma.image.deleteMany({});
+    console.log(`Successfully deleted ${deletedImages.count} image records`);
+    
+    console.log("Deleting product records...");
+    const deletedProducts = await prisma.product.deleteMany({});
+    console.log(`Successfully deleted ${deletedProducts.count} product records`);
+    
+    console.log("Deleting category records...");
+    const deletedCategories = await prisma.category.deleteMany({});
+    console.log(`Successfully deleted ${deletedCategories.count} category records`);
+    
+    console.log("Deleting user records...");
+    const deletedUsers = await prisma.user.deleteMany({});
+    console.log(`Successfully deleted ${deletedUsers.count} user records`);
+    
+    console.log("✅ Database cleanup completed successfully");
+  } catch (error) {
+    console.error("❌ Error during database cleanup:", error);
+    throw error; // Re-throw to stop the process
   }
-  console.log("Demo categories inserted successfully!");
-  
-  for (const product of demoProducts) {
-    await prisma.product.create({
-      data: product,
-    });
-  }
-  console.log("Demo products inserted successfully!");
 }
 
-insertDemoData()
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
+/**
+ * Generate fake users
+ */
+async function generateUsers() {
+  console.log("Generating users...");
+  
+  // Create admin user
+  await prisma.user.create({
+    data: {
+      email: "admin@example.com",
+      password: await bcrypt.hash("admin123", 10),
+      role: "admin"
+    }
   });
+  
+  // Create regular users
+  const users = [];
+  for (let i = 0; i < NUM_USERS; i++) {
+    users.push({
+      email: faker.internet.email(),
+      password: await bcrypt.hash("password123", 10),
+      role: "user"
+    });
+  }
+  
+  await prisma.user.createMany({
+    data: users,
+    skipDuplicates: true,
+  });
+  
+  console.log(`Created ${NUM_USERS + 1} users`);
+}
+
+/**
+ * Generate categories
+ */
+async function generateCategories() {
+  console.log("Generating categories...");
+  
+  const categories = demoCategories.map(name => ({ name }));
+  
+  await prisma.category.createMany({
+    data: categories,
+    skipDuplicates: true,
+  });
+  
+  console.log(`Created ${demoCategories.length} categories`);
+}
+
+/**
+ * Generate products with images
+ */
+async function generateProducts() {
+  console.log("Generating products...");
+  
+  // Get all categories
+  const categories = await prisma.category.findMany();
+  
+  // Generate products
+  for (let i = 0; i < NUM_PRODUCTS; i++) {
+    const category = categories[Math.floor(Math.random() * categories.length)];
+    const title = faker.commerce.productName();
+    const slug = title.toLowerCase().replace(/\s+/g, '-') + '-' + faker.string.alphanumeric(5);
+    
+    const product = await prisma.product.create({
+      data: {
+        title,
+        slug,
+        mainImage: `product${i + 1}.webp`,
+        price: parseInt(faker.commerce.price({ min: 10, max: 1000 })),
+        rating: faker.number.int({ min: 1, max: 5 }),
+        description: faker.commerce.productDescription(),
+        manufacturer: faker.helpers.arrayElement(manufacturers),
+        inStock: faker.number.int({ min: 0, max: 100 }),
+        categoryId: category.id,
+      }
+    });
+    
+    // Create additional images for each product (0-4 images)
+    const numImages = faker.number.int({ min: 0, max: 4 });
+    const images = [];
+    
+    for (let j = 0; j < numImages; j++) {
+      images.push({
+        productID: product.id,
+        image: `${slug}-image-${j + 1}.webp`,
+      });
+    }
+    
+    if (images.length > 0) {
+      await prisma.image.createMany({
+        data: images
+      });
+    }
+  }
+  
+  console.log(`Created ${NUM_PRODUCTS} products with additional images`);
+}
+
+/**
+ * Generate customer orders with order products
+ */
+async function generateOrders() {
+  console.log("Generating customer orders...");
+  
+  // Get all products
+  const products = await prisma.product.findMany();
+  
+  // Generate orders
+  for (let i = 0; i < NUM_ORDERS; i++) {
+    // Select random products for this order (1-5 products)
+    const numOrderProducts = faker.number.int({ min: 1, max: 5 });
+    const selectedProducts = [];
+    let total = 0;
+    
+    // Ensure we don't select the same product twice
+    while (selectedProducts.length < numOrderProducts) {
+      const product = faker.helpers.arrayElement(products);
+      if (!selectedProducts.find(p => p.id === product.id)) {
+        const quantity = faker.number.int({ min: 1, max: 3 });
+        selectedProducts.push({
+          product,
+          quantity
+        });
+        total += product.price * quantity;
+      }
+    }
+    
+    // Create order
+    const order = await prisma.customer_order.create({
+      data: {
+        name: faker.person.firstName(),
+        lastname: faker.person.lastName(),
+        phone: faker.phone.number(),
+        email: faker.internet.email(),
+        company: faker.company.name(),
+        adress: faker.location.streetAddress(),
+        apartment: faker.location.secondaryAddress(),
+        postalCode: faker.location.zipCode(),
+        city: faker.location.city(),
+        country: faker.location.country(),
+        orderNotice: faker.datatype.boolean() ? faker.lorem.sentence() : null,
+        status: faker.helpers.arrayElement(['pending', 'processing', 'shipped', 'delivered', 'cancelled']),
+        total: total
+      }
+    });
+    
+    // Create order products
+    const orderProducts = selectedProducts.map(({ product, quantity }) => ({
+      customerOrderId: order.id,
+      productId: product.id,
+      quantity
+    }));
+    
+    await prisma.customer_order_product.createMany({
+      data: orderProducts
+    });
+  }
+  
+  console.log(`Created ${NUM_ORDERS} customer orders`);
+}
+
+/**
+ * Generate wishlists
+ */
+async function generateWishlists() {
+  console.log("Generating wishlists...");
+  
+  const users = await prisma.user.findMany({ where: { role: "user" } });
+  const products = await prisma.product.findMany();
+  
+  for (let i = 0; i < NUM_WISHLISTS; i++) {
+    await prisma.wishlist.create({
+      data: {
+        userId: faker.helpers.arrayElement(users).id,
+        productId: faker.helpers.arrayElement(products).id
+      }
+    });
+  }
+  
+  console.log(`Created ${NUM_WISHLISTS} wishlist items`);
+}
+
+/**
+ * Main function to insert all demo data
+ */
+async function insertDemoData() {
+  try {
+    console.log("🚀 Starting demo data generation process...");
+    
+    // First, delete all existing data
+    await deleteAllExistingData();
+    
+    // Generate new data
+    await generateUsers();
+    await generateCategories();
+    await generateProducts();
+    await generateOrders();
+    await generateWishlists();
+    
+    console.log("✅ All demo data inserted successfully!");
+  } catch (error) {
+    console.error("❌ Error inserting demo data:", error);
+    process.exit(1);
+  } finally {
+    await prisma.$disconnect();
+    console.log("Database connection closed");
+  }
+}
+
+// Run the script
+insertDemoData();

@@ -1,3 +1,5 @@
+require('dotenv').config({ path: __dirname + '/../.env' });
+
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const bcrypt = require("bcryptjs");
@@ -36,12 +38,34 @@ async function getAllWishlistByUserId(request, response) {
 async function createWishItem(request, response) {
   try {
     const { userId, productId } = request.body;
-    const wishItem = await prisma.wishlist.create({
-      data: {
-        userId,
-        productId,
+    
+    // Check if the wishlist item already exists
+    const existingWishItem = await prisma.wishlist.findFirst({
+      where: {
+        userId: userId,
+        productId: productId,
       },
     });
+    
+    if (existingWishItem) {
+      return response.status(400).json({ error: "Item already in wishlist" });
+    }
+    
+    // Create the wishlist item with proper connections
+    const wishItem = await prisma.wishlist.create({
+      data: {
+        user: {
+          connect: { id: userId }
+        },
+        product: {
+          connect: { id: productId }
+        }
+      },
+      include: {
+        product: true // Include product details in the response
+      }
+    });
+    
     return response.status(201).json(wishItem);
   } catch (error) {
     console.error("Error creating wish item:", error);
@@ -111,5 +135,6 @@ module.exports = {
   getAllWishlist,
   createWishItem,
   deleteWishItem,
-  getSingleProductFromWishlist
+  getSingleProductFromWishlist,
+  deleteAllWishItemByUserId
 };
