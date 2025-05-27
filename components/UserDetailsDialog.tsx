@@ -21,7 +21,7 @@ import {
 import { isValidEmailAddressFormat } from '@/lib/utils';
 
 interface UserDetailsDialogProps {
-  userId: number;
+  userId: string;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   onUserUpdate?: () => void;
@@ -47,7 +47,7 @@ const UserDetailsDialog = ({
   const [isLoading, setIsLoading] = useState(true);
   const [isReadOnly, setIsReadOnly] = useState(mode === 'view');
 
-  const fetchUserData = async () => {
+  const fetchUserData = React.useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await fetch(`http://localhost:3001/api/users/${userId}`);
@@ -63,14 +63,14 @@ const UserDetailsDialog = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [userId]);
 
   useEffect(() => {
     if (isOpen && userId) {
       fetchUserData();
       setIsReadOnly(mode === 'view');
     }
-  }, [isOpen, userId, mode]);
+  }, [isOpen, userId, mode, fetchUserData]);
 
   const updateUser = async () => {
     if (

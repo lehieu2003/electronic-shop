@@ -11,7 +11,7 @@ const DashboardSidebar = () => {
   return (
     <div className='h-full w-[240px] max-xl:w-full bg-gray-100 text-gray-800'>
       <div className='space-y-1 py-4'>
-        <Link href='/admin'>
+        <Link href='/admin/dashboard'>
           <Button
             variant='ghost'
             className='w-full justify-start text-gray-800 hover:bg-gray-200 hover:text-gray-900 px-6 py-6'

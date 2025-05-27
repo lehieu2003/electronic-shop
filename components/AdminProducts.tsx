@@ -37,6 +37,7 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import { PlusCircle, Pencil, Trash2, Search } from 'lucide-react';
+import Image from 'next/image';
 
 type Product = {
   id: string;
@@ -341,7 +342,7 @@ const AdminProducts = () => {
                   <Checkbox />
                 </TableCell>
                 <TableCell>
-                  <img
+                  <Image
                     src={product.mainImage}
                     alt={product.title}
                     className='h-12 w-12 object-cover rounded-md'

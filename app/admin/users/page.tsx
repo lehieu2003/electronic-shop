@@ -31,11 +31,11 @@ import AddUserDialog from '@/components/AddUserDialog';
 
 const DashboardUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [userToDelete, setUserToDelete] = useState<number | null>(null);
+  const [userToDelete, setUserToDelete] = useState<string | null>(null);
   const [actionMode, setActionMode] = useState<'view' | 'edit' | null>(null);
 
   const fetchUsers = () => {
@@ -57,7 +57,7 @@ const DashboardUsers = () => {
     fetchUsers();
   }, []);
 
-  const handleOpenDetails = (userId: number, mode: 'view' | 'edit') => {
+  const handleOpenDetails = (userId: string, mode: 'view' | 'edit') => {
     setSelectedUserId(userId);
     setActionMode(mode);
     setIsDetailsOpen(true);
@@ -68,7 +68,7 @@ const DashboardUsers = () => {
     fetchUsers();
   };
 
-  const handleDeleteClick = (userId: number) => {
+  const handleDeleteClick = (userId: string) => {
     setUserToDelete(userId);
     setIsDeleteDialogOpen(true);
   };

@@ -2,7 +2,7 @@
 import { DashboardSidebar } from '@/components/index';
 import { nanoid } from 'nanoid';
 import React, { useEffect, useState } from 'react';
-import { formatCategoryName } from '../../../../utils/categoryFormating';
+import { formatCategoryName } from '../../../utils/categoryFormating';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -32,13 +32,13 @@ import AddCategoryDialog from '@/components/AddCategoryDialog';
 
 const DashboardCategory = () => {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null
   );
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [categoryToDelete, setCategoryToDelete] = useState<number | null>(null);
+  const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
   const [actionMode, setActionMode] = useState<'view' | 'edit' | null>(null);
 
   const fetchCategories = () => {
@@ -59,7 +59,7 @@ const DashboardCategory = () => {
     fetchCategories();
   }, []);
 
-  const handleOpenDetails = (categoryId: number, mode: 'view' | 'edit') => {
+  const handleOpenDetails = (categoryId: string, mode: 'view' | 'edit') => {
     setSelectedCategoryId(categoryId);
     setActionMode(mode);
     setIsDetailsOpen(true);
@@ -70,7 +70,7 @@ const DashboardCategory = () => {
     fetchCategories();
   };
 
-  const handleDeleteClick = (categoryId: number) => {
+  const handleDeleteClick = (categoryId: string) => {
     setCategoryToDelete(categoryId);
     setIsDeleteDialogOpen(true);
   };

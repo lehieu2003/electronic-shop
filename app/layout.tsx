@@ -25,9 +25,8 @@ export default async function RootLayout({
   const pathname =
     headersList.get('x-pathname') || headersList.get('x-url') || '';
 
-  // Check if current path is admin dashboard
+  // Kiểm tra chính xác hơn nếu đường dẫn thuộc về dashboard
   const isAdminDashboard = pathname.includes('/admin');
-
   return (
     <html lang='en' data-theme='light' suppressHydrationWarning>
       <body className={inter.className} suppressHydrationWarning>

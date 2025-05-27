@@ -20,7 +20,7 @@ import {
 } from '../utils/categoryFormating';
 
 interface CategoryDetailsDialogProps {
-  categoryId: number;
+  categoryId: string;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   onCategoryUpdate?: () => void;
@@ -44,7 +44,7 @@ const CategoryDetailsDialog = ({
   const [isLoading, setIsLoading] = useState(true);
   const [isReadOnly, setIsReadOnly] = useState(mode === 'view');
 
-  const fetchCategoryData = async () => {
+  const fetchCategoryData = React.useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await fetch(
@@ -61,14 +61,14 @@ const CategoryDetailsDialog = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [categoryId]);
 
   useEffect(() => {
     if (isOpen && categoryId) {
       fetchCategoryData();
       setIsReadOnly(mode === 'view');
     }
-  }, [isOpen, categoryId, mode]);
+  }, [isOpen, categoryId, mode, fetchCategoryData]);
 
   const updateCategory = async () => {
     if (!categoryInput.name.trim()) {
