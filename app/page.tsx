@@ -5,7 +5,7 @@ import {
   IntroducingSection,
   Newsletter,
   ProductsSection,
-} from '@/components';
+} from '@/components/index';
 
 export default function Home() {
   return (

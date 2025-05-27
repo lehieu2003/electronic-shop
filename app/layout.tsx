@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { Footer, Header } from '@/components';
+import { Footer, Header } from '@/components/index';
 import SessionProvider from '@/utils/SessionProvider';
 import Providers from '@/Providers';
 import { getServerSession } from 'next-auth';
 import 'svgmap/dist/svgMap.min.css';
+import { headers } from 'next/headers';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,13 +21,20 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession();
+  const headersList = headers();
+  const pathname =
+    headersList.get('x-pathname') || headersList.get('x-url') || '';
+
+  // Check if current path is admin dashboard
+  const isAdminDashboard = pathname.includes('/admin');
+
   return (
-    <html lang='en' data-theme='light'>
-      <body className={inter.className}>
+    <html lang='en' data-theme='light' suppressHydrationWarning>
+      <body className={inter.className} suppressHydrationWarning>
         <SessionProvider session={session}>
-          <Header />
+          {!isAdminDashboard && <Header />}
           <Providers>{children}</Providers>
-          <Footer />
+          {!isAdminDashboard && <Footer />}
         </SessionProvider>
       </body>
     </html>
